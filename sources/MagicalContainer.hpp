@@ -17,11 +17,14 @@ namespace ariel {
         vector<int> elements;
         vector<int*> crossElements;
         vector<int*> primeElements;
+
     public:
         MagicalContainer();
         void addElement(int ele);
         void removeElement(int ele);
         size_t size();
+
+        virtual ~MagicalContainer();
 
         struct AscendingIterator{
         public:
@@ -31,7 +34,8 @@ namespace ariel {
 
             AscendingIterator();
             AscendingIterator(MagicalContainer& container);
-            AscendingIterator(size_t idx,MagicalContainer &container);
+            AscendingIterator(const AscendingIterator& ascendingIterator);
+            AscendingIterator& operator=(const AscendingIterator& ascendingIterator);
             AscendingIterator begin();
             AscendingIterator end();
 
@@ -45,6 +49,7 @@ namespace ariel {
             bool operator!=(AscendingIterator other);
 
         private:
+            AscendingIterator(size_t idx,MagicalContainer &container);
             MagicalContainer *magicalContainer;
             pointer ptr;
             size_t idx;
@@ -57,7 +62,8 @@ namespace ariel {
 
             SideCrossIterator();
             SideCrossIterator(MagicalContainer& container);
-            SideCrossIterator(size_t idx,MagicalContainer &container);
+            SideCrossIterator(const SideCrossIterator& crossIterator);
+            SideCrossIterator& operator=(const SideCrossIterator& crossIterator);
             SideCrossIterator begin();
             SideCrossIterator end();
 
@@ -71,6 +77,7 @@ namespace ariel {
             bool operator!=(SideCrossIterator other);
 
         private:
+            SideCrossIterator(size_t idx,MagicalContainer &container);
             MagicalContainer *magicalContainer;
             pointer ptr;
             size_t idx;
@@ -83,7 +90,8 @@ namespace ariel {
 
             PrimeIterator();
             PrimeIterator(MagicalContainer& container);
-            PrimeIterator(size_t idx,MagicalContainer &container);
+            PrimeIterator(const PrimeIterator& primeIterator);
+            PrimeIterator& operator=(const PrimeIterator& primeIterator);
             PrimeIterator begin();
             PrimeIterator end();
 
@@ -97,6 +105,7 @@ namespace ariel {
             bool operator!=(PrimeIterator other);
 
         private:
+            PrimeIterator(size_t idx,MagicalContainer &container);
             MagicalContainer *magicalContainer;
             pointer ptr;
             size_t idx;

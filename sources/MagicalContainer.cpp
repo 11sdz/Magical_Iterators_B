@@ -16,8 +16,7 @@ namespace ariel {
             this->crossElements.reserve(this->crossElements.capacity() * 2);
             this->primeElements.reserve(this->primeElements.capacity()*2);
         }
-        int *num = new int(ele);
-        this->elements.push_back(*num);
+        this->elements.push_back(ele);
         std::sort(this->elements.begin(), this->elements.end());
 
         crossElements.push_back(nullptr); //filler
@@ -49,7 +48,7 @@ namespace ariel {
     }
 
     void MagicalContainer::removeElement(int ele) {
-        if(std::count(elements.begin(), elements.end(),ele)==0){
+        if(std::count(elements.begin(), elements.end(),ele)<1){
             throw runtime_error("no such element");
             return;
         }
@@ -92,6 +91,26 @@ namespace ariel {
         this->ptr=&container.elements[0];
         this->idx=0;
     }
+
+    MagicalContainer::AscendingIterator::AscendingIterator(
+            const MagicalContainer::AscendingIterator &ascendingIterator) {
+        this->magicalContainer=ascendingIterator.magicalContainer;
+        this->ptr=ascendingIterator.ptr;
+        this->idx=ascendingIterator.idx;
+    }
+
+    MagicalContainer::AscendingIterator &
+    MagicalContainer::AscendingIterator::operator=(const MagicalContainer::AscendingIterator &ascendingIterator) {
+        if (this->magicalContainer!=ascendingIterator.magicalContainer){
+            throw runtime_error("iterators are pointing at different containers\n"
+                                "  AscendingIterator");
+        }
+        this->magicalContainer=ascendingIterator.magicalContainer;
+        this->ptr=ascendingIterator.ptr;
+        this->idx=ascendingIterator.idx;
+        return *this;
+    }
+
     MagicalContainer::AscendingIterator::AscendingIterator(size_t idx,MagicalContainer& container) {
         this->magicalContainer=&container;
         this->ptr=&magicalContainer->elements[idx];
@@ -166,6 +185,25 @@ namespace ariel {
         if(container.crossElements.size()>0){
             this->ptr=magicalContainer->crossElements[0];
         }
+    }
+
+    MagicalContainer::SideCrossIterator::SideCrossIterator(const MagicalContainer::SideCrossIterator &crossIterator) {
+        this->magicalContainer=crossIterator.magicalContainer;
+        this->ptr=crossIterator.ptr;
+        this->idx=crossIterator.idx;
+
+    }
+
+    MagicalContainer::SideCrossIterator &
+    MagicalContainer::SideCrossIterator::operator=(const MagicalContainer::SideCrossIterator &crossIterator) {
+        if (this->magicalContainer!=crossIterator.magicalContainer){
+            throw runtime_error("iterators are pointing at different containers\n"
+                                "  AscendingIterator");
+        }
+        this->magicalContainer=crossIterator.magicalContainer;
+        this->ptr=crossIterator.ptr;
+        this->idx=crossIterator.idx;
+        return *this;
     }
 
     MagicalContainer::SideCrossIterator::SideCrossIterator(size_t idx, MagicalContainer &container) {
@@ -246,6 +284,23 @@ namespace ariel {
             this->ptr=container.primeElements[idx];
         }
     }
+    MagicalContainer::PrimeIterator::PrimeIterator(const MagicalContainer::PrimeIterator &primeIterator) {
+        this->magicalContainer=primeIterator.magicalContainer;
+        this->ptr=primeIterator.ptr;
+        this->idx= primeIterator.idx;
+    }
+
+    MagicalContainer::PrimeIterator &
+    MagicalContainer::PrimeIterator::operator=(const MagicalContainer::PrimeIterator &primeIterator) {
+        if (this->magicalContainer!=primeIterator.magicalContainer){
+            throw runtime_error("iterators are pointing at different containers\n"
+                                "  AscendingIterator");
+        }
+        this->magicalContainer=primeIterator.magicalContainer;
+        this->ptr=primeIterator.ptr;
+        this->idx= primeIterator.idx;
+        return *this;
+    }
 
     MagicalContainer::PrimeIterator::PrimeIterator(size_t idx, MagicalContainer &container) {
         this->magicalContainer=&container;
@@ -325,5 +380,8 @@ namespace ariel {
             }
         }
         return true;
+    }
+
+    MagicalContainer::~MagicalContainer() {
     }
 } // ariel
