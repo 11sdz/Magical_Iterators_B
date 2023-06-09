@@ -5,7 +5,28 @@
 #include "MagicalContainer.hpp"
 
 namespace ariel {
+    /*
+     * =====================================================================
+     * =====================MagicalContainer================================
+     * =====================================================================
+     */
     MagicalContainer::MagicalContainer(){}
+    MagicalContainer::~MagicalContainer() {
+    }
+
+    MagicalContainer::MagicalContainer(const MagicalContainer &magicalContainer) {
+
+        this->elements=magicalContainer.elements;
+        this->primeElements=magicalContainer.primeElements;
+        this->crossElements=magicalContainer.crossElements;
+    }
+
+    MagicalContainer &MagicalContainer::operator=(const MagicalContainer &magicalContainer) {
+        this->elements=magicalContainer.elements;
+        this->primeElements=magicalContainer.primeElements;
+        this->crossElements=magicalContainer.crossElements;
+        return *this;
+    }
 
     void MagicalContainer::addElement(int ele) {
         if (std::count(elements.begin(), elements.end(), ele) > 0) {
@@ -78,8 +99,10 @@ namespace ariel {
     }
 
     /*
-     * Iterators
-     */
+       * =====================================================================
+       * =====================AscendingIterator===============================
+       * =====================================================================
+       */
     MagicalContainer::AscendingIterator::AscendingIterator() {
         this->magicalContainer=NULL;
         this->ptr= nullptr;
@@ -172,8 +195,10 @@ namespace ariel {
         return !(*this==other);
     }
     /*
-     * SideCross Iterators
-     */
+        * =====================================================================
+        * =====================SideCrossIterator===============================
+        * =====================================================================
+        */
     MagicalContainer::SideCrossIterator::SideCrossIterator() {
 
     }
@@ -270,8 +295,10 @@ namespace ariel {
         return !(this->ptr==other.ptr);
     }
     /*
-     * Prime Iterators
-     */
+    * =====================================================================
+    * =====================Prime Iterators================================
+    * =====================================================================
+    */
     MagicalContainer::PrimeIterator::PrimeIterator() {
 
     }
@@ -365,7 +392,10 @@ namespace ariel {
     bool MagicalContainer::PrimeIterator::operator!=(MagicalContainer::PrimeIterator other) {
         return !(this->ptr==other.ptr);
     }
-
+/*
+ * ===============================================
+ * ===============Prime Algo======================
+ */
     bool MagicalContainer::isPrime(int number) {
         if(number==2){
             return true;
@@ -382,6 +412,4 @@ namespace ariel {
         return true;
     }
 
-    MagicalContainer::~MagicalContainer() {
-    }
 } // ariel

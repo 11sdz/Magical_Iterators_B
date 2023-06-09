@@ -20,6 +20,10 @@ namespace ariel {
 
     public:
         MagicalContainer();
+        MagicalContainer(const MagicalContainer&);
+        MagicalContainer& operator=(const MagicalContainer&);
+        MagicalContainer(MagicalContainer&&) = delete;
+        MagicalContainer& operator=(MagicalContainer&&) = delete;
         void addElement(int ele);
         void removeElement(int ele);
         size_t size();
@@ -36,6 +40,9 @@ namespace ariel {
             AscendingIterator(MagicalContainer& container);
             AscendingIterator(const AscendingIterator& ascendingIterator);
             AscendingIterator& operator=(const AscendingIterator& ascendingIterator);
+            AscendingIterator(AscendingIterator&&) = delete;
+            AscendingIterator& operator=(AscendingIterator&&) = delete;
+            ~AscendingIterator()=default;
             AscendingIterator begin();
             AscendingIterator end();
 
@@ -64,6 +71,9 @@ namespace ariel {
             SideCrossIterator(MagicalContainer& container);
             SideCrossIterator(const SideCrossIterator& crossIterator);
             SideCrossIterator& operator=(const SideCrossIterator& crossIterator);
+            SideCrossIterator(SideCrossIterator&&) = delete;
+            SideCrossIterator& operator=(SideCrossIterator&&) = delete;
+            ~SideCrossIterator()=default;
             SideCrossIterator begin();
             SideCrossIterator end();
 
@@ -92,6 +102,9 @@ namespace ariel {
             PrimeIterator(MagicalContainer& container);
             PrimeIterator(const PrimeIterator& primeIterator);
             PrimeIterator& operator=(const PrimeIterator& primeIterator);
+            PrimeIterator(PrimeIterator&&) = delete;
+            PrimeIterator& operator=(PrimeIterator&&) = delete;
+            ~PrimeIterator()=default;
             PrimeIterator begin();
             PrimeIterator end();
 
