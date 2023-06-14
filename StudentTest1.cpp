@@ -348,6 +348,7 @@ TEST_CASE("Comparing PrimeIterator") {
 
         CHECK(it1 == it1.end());
         CHECK(it2 == it2.end());
+
     }
 }
 
@@ -597,3 +598,180 @@ TEST_CASE("operator= throws when iterators are pointing at different containers"
 }
 
 
+vector<int> numVec={-999,9999,0,4,13,-14,-3,3,77,7,123,-456,957,12345678,-23456781,1234,456,6,2,1,-1,871,888,15,20,-32,-144,700,123456789,333,-333,81};
+//sortedNumVec={-23456781,-999,-456,-333,-144,-32,-14,-3,-1,0,1,2,3,4,6,7,13,15,20,77,81,123,333,456,700,871,888,957,1234,9999,12345678,123456789};
+void fillVector(vector<int>* vector){
+    ::srand((unsigned) time(NULL));
+    vector->reserve(100);
+    for (int i = 0; i < 100; ++i) {
+        int num=::rand();
+        int sign=::rand()%2;
+        while(std::count(vector->begin(), vector->end(),num)){
+            //no duplication for tests
+            num=::rand();
+        }
+        switch (sign) {
+            case 0:
+                vector->push_back(num);
+                break;
+            case 1:
+                vector->push_back(num*-1);
+                break;
+            default:
+                break;
+        }
+    }
+}
+void buildContainer(MagicalContainer *container ,vector<int>* vector) {
+    std::sort(vector->begin(), vector->end());
+    for (int num: *vector) {
+        container->addElement(num);
+    }
+}
+
+TEST_SUITE("Container"){
+    TEST_CASE("Basic operations on container"){
+        MagicalContainer container;
+        CHECK_EQ(container.size(),0);
+        CHECK_NOTHROW(container.removeElement(100));
+
+        CHECK_NOTHROW(container.addElement(100));
+        CHECK_EQ(container.size(),1);
+
+        CHECK_NOTHROW((container.removeElement(100)));
+        puts("hereeeeeeeeeeeee\n");
+        CHECK_EQ(container.size(),0);
+        for (int i = 1; i <= 50; ++i) {
+            container.addElement(i);
+            CHECK_EQ(container.size(),i);
+        }
+        int size=container.size();
+        container.addElement(10);
+        container.addElement(11);
+        CHECK_EQ(container.size(),size);
+        for (int i = 50; i >0 ; --i) {
+            CHECK_EQ(container.size(),i);
+            container.removeElement(i);
+        }
+        CHECK_EQ(container.size(),0);
+        container.removeElement(10);
+        CHECK_EQ(container.size(),0);
+    }
+}
+
+TEST_CASE("Is Prime"){
+    CHECK_FALSE(isPrime(4));
+    CHECK(isPrime(2));
+    CHECK_FALSE(isPrime(1000));
+    CHECK(isPrime(3));
+    CHECK_FALSE(isPrime(81));
+    CHECK(isPrime(5));
+    CHECK(isPrime(31));
+    CHECK(isPrime(1993));
+    CHECK(isPrime(5659));
+    CHECK_FALSE(isPrime(2023));
+}
+
+TEST_SUITE("Operators and Iterating over the list"){
+    TEST_CASE("AscendingIterator"){
+        MagicalContainer container;
+        buildContainer(&container,&numVec);
+        MagicalContainer::AscendingIterator ascIter(container);
+        auto it=ascIter.begin();
+        size_t i=0;
+        CHECK((ascIter.begin()==ascIter.begin()));
+        CHECK((ascIter.begin()!=ascIter.end()));
+        for (; it != ascIter.end(); ++it,++i)  {
+            CHECK_EQ(*it,numVec[i]);
+            CHECK_EQ(*it.operator->(),numVec[i]);
+        }
+        CHECK(it==ascIter.end());
+    }
+    TEST_CASE("PrimeIterator"){
+        MagicalContainer container;
+        buildContainer(&container,&numVec);
+        MagicalContainer::PrimeIterator primeIter(container);
+        auto it=primeIter.begin();
+        size_t i=0;
+        CHECK((primeIter.begin()==primeIter.begin()));
+        CHECK((primeIter.begin()!=primeIter.end()));
+        for (; it != primeIter.end();++i)  {
+            if(isPrime(numVec[i])) {
+                CHECK(*it== numVec[i]);
+                ++it;
+            }
+        }
+        CHECK(it==primeIter.end());
+    }
+}
+
+
+TEST_SUITE("Iterators validation after Insertion/Erasure , Relational Operators"){
+
+    TEST_CASE("AscendingIterator"){
+        MagicalContainer container;
+        buildContainer(&container,&numVec);   //-23456781,-999,-456,-333,-144,-32,-14,-3,-1,
+        // 0,1,2,3,4,6,7,13,15,20,77,81,123,333,456,700
+        //,871,888,957,1234,9999,12345678,123456789
+        MagicalContainer::AscendingIterator ascIterator(container);
+        auto it=ascIterator.begin();
+
+        CHECK(*it==-23456781);
+        ++it;
+        container.addElement(-111111);
+        CHECK(*it==-999);
+        container.addElement(-555);
+        ++it;
+        CHECK(*it==-555);
+        container.removeElement(-456);
+        ++it;
+        CHECK(*it==-333);
+        container.removeElement(-999);
+        CHECK(*it==-333);
+    }
+    //to avoid non-simple logic in test we will use a pre-made vector
+    TEST_CASE("SideCrossIterator"){
+        MagicalContainer container;
+        container.addElement(1);
+        container.addElement(100);
+        container.addElement(5);
+        container.addElement(90);
+        container.addElement(10);
+        container.addElement(80);
+        container.addElement(30);
+        container.addElement(60);
+        MagicalContainer::SideCrossIterator crossIterator(container);
+        auto it=crossIterator.begin();
+
+        CHECK(*it==1);
+        ++it;
+        container.addElement(110);
+        CHECK(*it==100);
+        ++it;
+        CHECK(*it==10);
+        container.removeElement(90);
+        ++it;
+        CHECK(*it==80);
+    }
+
+    TEST_CASE("PrimeIterator"){
+        MagicalContainer container;
+        buildContainer(&container,&numVec);   //-23456781,-999,-456,-333,-144,-32,-14,-3,-1,
+        // 0,1,2,3,4,6,7,13,15,20,77,81,123,333,456,700
+        //,871,888,957,1234,9999,12345678,123456789
+        MagicalContainer::PrimeIterator primeIterator(container);
+        auto it=primeIterator.begin();
+        CHECK(*it==2);
+        container.removeElement(3);
+        container.addElement(5);
+        ++it;
+        CHECK(*it==5);
+        container.removeElement(7);
+        ++it;
+        CHECK(*it==13);
+        container.removeElement(2);
+        CHECK(*it==13);
+
+    }
+
+}
