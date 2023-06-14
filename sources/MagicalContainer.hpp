@@ -2,21 +2,21 @@
 // Created by mintsdz on 6/8/23.
 //
 
-#ifndef MAGICAL_ITERATORS_B_MAGICALCONTAINER_HPP
-#define MAGICAL_ITERATORS_B_MAGICALCONTAINER_HPP
+#ifndef CMAKEITER_MAGICALCONTAINER_HPP
+#define CMAKEITER_MAGICALCONTAINER_HPP
 #include <vector>
 #include <cstddef>
 #include <iterator>
-#include <cmath>
 #include <algorithm>
+#include "MagicalLinkList.hpp"
 using namespace std;
 namespace ariel {
 
     class MagicalContainer {
     private:
-        vector<int> elements;
-        vector<int*> crossElements;
-        vector<int*> primeElements;
+        MagicalLinkList<int> elements;
+        MagicalLinkList<int*> crossElements;
+        MagicalLinkList<int*> primeElements;
 
     public:
         MagicalContainer();
@@ -42,6 +42,7 @@ namespace ariel {
             AscendingIterator& operator=(const AscendingIterator& ascendingIterator);
             AscendingIterator(AscendingIterator&&) = delete;
             AscendingIterator& operator=(AscendingIterator&&) = delete;
+            AscendingIterator(Node<int>*pNode);
             ~AscendingIterator()=default;
             AscendingIterator begin();
             AscendingIterator end();
@@ -56,10 +57,9 @@ namespace ariel {
             bool operator!=(AscendingIterator other);
 
         private:
-            AscendingIterator(size_t idx,MagicalContainer &container);
             MagicalContainer *magicalContainer;
             pointer ptr;
-            size_t idx;
+            Node<int>* pNode;
         };
         struct SideCrossIterator{
         public:
@@ -73,6 +73,7 @@ namespace ariel {
             SideCrossIterator& operator=(const SideCrossIterator& crossIterator);
             SideCrossIterator(SideCrossIterator&&) = delete;
             SideCrossIterator& operator=(SideCrossIterator&&) = delete;
+            SideCrossIterator(Node<int*>*pNode);
             ~SideCrossIterator()=default;
             SideCrossIterator begin();
             SideCrossIterator end();
@@ -87,10 +88,10 @@ namespace ariel {
             bool operator!=(SideCrossIterator other);
 
         private:
-            SideCrossIterator(size_t idx,MagicalContainer &container);
+            bool flag;
             MagicalContainer *magicalContainer;
             pointer ptr;
-            size_t idx;
+            Node<int*>* pNode;
         };
         struct PrimeIterator{
         public:
@@ -104,6 +105,7 @@ namespace ariel {
             PrimeIterator& operator=(const PrimeIterator& primeIterator);
             PrimeIterator(PrimeIterator&&) = delete;
             PrimeIterator& operator=(PrimeIterator&&) = delete;
+            PrimeIterator(Node<int*>* pNode);
             ~PrimeIterator()=default;
             PrimeIterator begin();
             PrimeIterator end();
@@ -118,12 +120,11 @@ namespace ariel {
             bool operator!=(PrimeIterator other);
 
         private:
-            PrimeIterator(size_t idx,MagicalContainer &container);
             MagicalContainer *magicalContainer;
             pointer ptr;
-            size_t idx;
+            Node<int*>* pNode;
+
         };
-        bool isPrime(int number);
     };
 
 } // ariel
