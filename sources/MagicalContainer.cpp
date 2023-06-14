@@ -27,23 +27,35 @@ namespace ariel {
         this->crossElements=magicalContainer.crossElements;
         return *this;
     }
-
+    /**
+     * adding the element to elements list
+     * adding a pointer to crossElements list
+     * adding a pointer to primeElements
+     * @param ele
+     */
     void MagicalContainer::addElement(int ele) {
         if(!elements.contains(ele)) {
             this->elements.addSorted(ele);
             int *pEle = elements.get(ele);
             if (isPrime(ele)) {
+                //adding if ele is prime the pEle at sorted order
                 primeElements.addSorted(pEle);
             }
             if(crossElements.len()>=2) {
+                //if len>=3 we need to pushback and sort in crossOrder
                 this->crossElements.pushback(pEle);
                 crossElements.crossOrder();
             }else{
+                //if len<=2 we add in a ascending order since its 2 elements at most Smallest,Biggest
                 crossElements.addSorted(pEle);
             }
         }
     }
-
+    /**
+     * removing ele and removing pointer from each list
+     * and maintaining ascending and crossordered
+     * @param ele
+     */
     void MagicalContainer::removeElement(int ele) {
         if(this->size()) {
             if (!elements.contains(ele)) {
@@ -61,6 +73,10 @@ namespace ariel {
         }
     }
 
+    /**
+     * return size
+     * @return
+     */
     size_t MagicalContainer::size() {
         return elements.len();
     }
@@ -100,8 +116,13 @@ namespace ariel {
         this->pNode=ascendingIterator.pNode;
         return *this;
     }
-
+/**
+ * creating end() or begin()
+ * @param pNode
+ */
     MagicalContainer::AscendingIterator::AscendingIterator(Node<int>* pNode){
+        //end => all parameters are nullptr
+        //begin=> pNode = head of the list , ptr = &(head->data)
         this->pNode=pNode;
         this->ptr= nullptr;
         if(pNode!= nullptr){
@@ -116,15 +137,25 @@ namespace ariel {
     MagicalContainer::AscendingIterator MagicalContainer::AscendingIterator::end() {
         return AscendingIterator(nullptr);
     }
-
-    int &MagicalContainer::AscendingIterator::operator*() const {
+    /**
+     * retunring reference to the current element that the iterators points to
+     * @return int&
+     */
+    MagicalContainer::AscendingIterator::reference MagicalContainer::AscendingIterator::operator*() const {
         return *this->ptr;
     }
-
+    /**
+     * retunring pointer to the current element that the iterators points to
+     * @return int*
+     */
     MagicalContainer::AscendingIterator::pointer MagicalContainer::AscendingIterator::operator->() {
         return ptr;
     }
 
+    /**
+     * iterating to the next Node
+     * @return AscendingIterator
+     */
     MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::operator++() {
         if(this->pNode== nullptr){
             throw runtime_error("beyond end Asc++");
@@ -133,7 +164,11 @@ namespace ariel {
         this->ptr = &(pNode->data);
         return *this;
     }
-
+/**
+ * binary operators
+ * @param other
+ * @return true/false
+ */
     bool MagicalContainer::AscendingIterator::operator<(MagicalContainer::AscendingIterator other) {
         if(this->magicalContainer!=other.magicalContainer){
             throw runtime_error("cannot compare between different containers");
@@ -149,15 +184,27 @@ namespace ariel {
         }
         return *(this->ptr)< *(other.ptr);
     }
-
+/**
+ * binary operators
+ * @param other
+ * @return true/false
+ */
     bool MagicalContainer::AscendingIterator::operator>(MagicalContainer::AscendingIterator other) {
         return !(*this<other) && !(*this==other);
     }
-
+/**
+ * binary operators
+ * @param other
+ * @return true/false
+ */
     bool MagicalContainer::AscendingIterator::operator==(MagicalContainer::AscendingIterator other) {
         return this->ptr==other.ptr;
     }
-
+/**
+ * binary operators
+ * @param other
+ * @return true/false
+ */
     bool MagicalContainer::AscendingIterator::operator!=(MagicalContainer::AscendingIterator other) {
         return !(*this==other);
     }
@@ -183,7 +230,6 @@ namespace ariel {
         this->magicalContainer=crossIterator.magicalContainer;
         this->ptr=crossIterator.ptr;
         this->pNode=crossIterator.pNode;
-        this->flag= crossIterator.flag;
     }
 
     MagicalContainer::SideCrossIterator &
@@ -195,14 +241,15 @@ namespace ariel {
         this->magicalContainer=crossIterator.magicalContainer;
         this->ptr=crossIterator.ptr;
         this->pNode=crossIterator.pNode;
-        this->flag= crossIterator.flag;
         return *this;
     }
-
+/**
+ * creating end() or begin()
+ * @param pNode
+ */
     MagicalContainer::SideCrossIterator::SideCrossIterator(Node<int*>* pNode){
         this->pNode=pNode;
         this->ptr= nullptr;
-        this->flag= true;
         if(pNode!= nullptr){
             this->ptr=(pNode->data);
         }
@@ -215,15 +262,24 @@ namespace ariel {
     MagicalContainer::SideCrossIterator MagicalContainer::SideCrossIterator::end() {
         return MagicalContainer::SideCrossIterator(nullptr);
     }
-
-    int &MagicalContainer::SideCrossIterator::operator*() const {
+/**
+     * retunring reference to the current element that the iterators points to
+     * @return int&
+     */
+    MagicalContainer::SideCrossIterator::reference MagicalContainer::SideCrossIterator::operator*() const {
         return *this->ptr;
     }
-
+/**
+     * retunring pointer to the current element that the iterators points to
+     * @return int*
+     */
     MagicalContainer::SideCrossIterator::pointer MagicalContainer::SideCrossIterator::operator->() {
         return ptr;
     }
-
+    /**
+     * iterating to the next Node
+     * @return SideCrossIterator
+     */
     MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operator++() {
         if(this->pNode== nullptr){
             throw runtime_error("beyond end Cross++");
@@ -297,7 +353,10 @@ namespace ariel {
         this->pNode= primeIterator.pNode;
         return *this;
     }
-
+/**
+ * creating end() or begin()
+ * @param pNode
+ */
     MagicalContainer::PrimeIterator::PrimeIterator(Node<int*>* pNode) {
         this->pNode=pNode;
         this->ptr= nullptr;
@@ -313,15 +372,24 @@ namespace ariel {
     MagicalContainer::PrimeIterator MagicalContainer::PrimeIterator::end() {
         return MagicalContainer::PrimeIterator(nullptr);
     }
-
-    int &MagicalContainer::PrimeIterator::operator*() const {
+/**
+     * retunring reference to the current element that the iterators points to
+     * @return int&
+     */
+    MagicalContainer::PrimeIterator::reference MagicalContainer::PrimeIterator::operator*() const {
         return *this->ptr;
     }
-
+/**
+     * retunring pointer to the current element that the iterators points to
+     * @return int*
+     */
     MagicalContainer::PrimeIterator::pointer MagicalContainer::PrimeIterator::operator->() {
         return ptr;
     }
-
+    /**
+     * iterating to the next Node
+     * @return PrimeIterator
+     */
     MagicalContainer::PrimeIterator &MagicalContainer::PrimeIterator::operator++() {
         if(this->pNode== nullptr){
             throw runtime_error("beyond end Asc++");

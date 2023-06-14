@@ -8,24 +8,50 @@
 #include <algorithm>
 #include <vector>
 #include "MyAlgos.hpp"
+
+/**
+ * This file represents my MagicalLinkList
+ * This LinkList can only be templaet T can only be int or int* for the purposes of the assigment
+ * and contains Nodes linked by next and prev pointers
+ */
 using namespace std;
 namespace ariel {
-
+    /**
+     * struct Node
+     * contains T type of data (int or int*)
+     * prev,next holds pointer to another Node<T> of the same type
+     * @tparam T int or int* only
+     */
     template<typename T>
     struct Node{
+        static_assert(std::is_same_v<T, int> || std::is_same_v<T, int*>, "T must be int or int*");/*asserting T is int or int**/
         T data;
         Node<T>* prev;
         Node<T>* next;
-        Node(Node<T>*prev,T data,Node<T>*next):data(data),prev(prev),next(next){};
+        Node(Node<T>*prev,T data,Node<T>*next):data(data),prev(prev),next(next){}/*Node constructor prev,data,next*/
     };
-
+/**
+ * MagicalLinkList class
+ * has head and tail
+ * this MagicalLinkList has to insertion methods addSorted for ascending sorted lists ,and pushback inserting Nodes at tail
+ * this MagicalLinkList also support a "sorting operation" to sort in SideCrossOrder (smallest,biggest,2nd smallest,2nd biggest....)
+ * a getMax method getting the biggest Node by data
+ * a getMin method getting the smallest Node by data
+ * a method to remove specific element
+ * a method to check if element is contained
+ * len method for getting the amount of Nodes in the list
+ * @tparam T
+ */
     template <typename T>
     class MagicalLinkList {
+    public:
+        static_assert(std::is_same_v<T, int> || std::is_same_v<T, int*>, "T must be int or int*");
     private:
         size_t _size;
         Node<T> *_head;
         Node<T> *_tail;
     public:
+        /*Constructors */
         MagicalLinkList():_size(0),_head(nullptr),_tail(nullptr){}
         MagicalLinkList(const MagicalLinkList& other): _size(other._size),_head(other._head),_tail(other._tail){}
         MagicalLinkList& operator=(const MagicalLinkList& other){
@@ -44,7 +70,7 @@ namespace ariel {
             this->_size=other._size;
             return *this;
         }
-
+/*Destructor*/
         virtual ~MagicalLinkList() {
             Node<T> *temp=_head;
             while(temp!= nullptr){
@@ -53,12 +79,18 @@ namespace ariel {
                 temp=next;
             }
         }
-
+/**
+ * crossOrdering sorting
+ */
         void crossOrder(){
-            vector<Node<T>*> vector1;
+            vector<Node<T>*> sideCrossVector;
             Node<T>* minmax= nullptr;
-            bool flag= true;
-            while (vector1.size()<len()) {
+            bool flag= true; /*acting like switch true-> we getMin , false->we getMax*/
+            while (sideCrossVector.size()<len()) {
+                /* unlinking 1 Node in each iteration from the list
+                 * odd iterations Minimum Node , even iterations Maximum node
+                 * and pushing the node to the back of vector
+                 */
                 if(flag) {
                     minmax = getMin(_head, _tail);
                     flag=false;
@@ -66,6 +98,7 @@ namespace ariel {
                     minmax = getMax(_head,_tail);
                     flag= true;
                 }
+                //unlinking node cases _head=_tail ,_tail,_head,middle
                 if (minmax == _head && minmax!=_tail) {
                     _head = minmax->next;
                     _head->prev = nullptr;
@@ -78,20 +111,28 @@ namespace ariel {
                 }
                 minmax->next= nullptr;
                 minmax->prev= nullptr;
-                vector1.push_back(minmax);
+                sideCrossVector.push_back(minmax);
             }
-            _tail=vector1.back();
-            std::reverse(vector1.begin(), vector1.end());
-            _head=vector1.back();
-            Node<T>* start=_head;
-            Node<T>* prev= nullptr;
-            while(!vector1.empty()){
-                start=vector1.back();
-                vector1.pop_back();
+            /*
+             *  using vector.back() because vector only support pop_back() operations
+             */
+            _tail=sideCrossVector.back(); // the last node in vector represents tail
+            std::reverse(sideCrossVector.begin(), sideCrossVector.end()); //reversing
+            _head=sideCrossVector.back(); //the last node in vector is the _head
+            Node<T>* start=_head;// like "iterator" over nodes
+            Node<T>* prev= nullptr; //holds the prev assigned as nullptr because the first node is the head
+            while(!sideCrossVector.empty()){
+                start=sideCrossVector.back();
+                sideCrossVector.pop_back();
                 start->next= nullptr;
-                if(!vector1.empty()){
-                    start->next=vector1.back();
+                if(!sideCrossVector.empty()){
+                    //if is empty we got the tail
+                    start->next=sideCrossVector.back();
                 }
+                /* holding the current Node
+                 * iterating to the nextNode
+                 * assigning the current Node as the prev of nextNode
+                 */
                 prev=start;
                 start=start->next;
                 if(start!= nullptr) {
@@ -99,6 +140,12 @@ namespace ariel {
                 }
             }
         }
+        /**
+         * finding the Maximum inbetween start and end
+         * @param start
+         * @param end
+         * @return node represents the maximum data between start and end
+         */
         Node<T>* getMax(Node<T>* start,Node<T>*end){
             int maxi=std::numeric_limits<int>::min();
             Node<T>* node=start;
@@ -111,7 +158,12 @@ namespace ariel {
             }
             return node;
         }
-
+                /**
+                * finding the Minimum inbetween start and end
+                * @param start
+                * @param end
+                * @return node represents the minimum data between start and end
+                */
         Node<T>* getMin(Node<T>* start,Node<T>*end){
             int mini=std::numeric_limits<int>::max();
             Node<T>* node=start;
@@ -124,7 +176,10 @@ namespace ariel {
             }
             return node;
         }
-
+/**
+ * inserting a new Node at the tail
+ * @param data
+ */
         void pushback(T data){
             if(_head== nullptr){
                 _head=new Node<T>(nullptr,data, nullptr);
@@ -140,7 +195,10 @@ namespace ariel {
             }
             _size++;
         }
-
+/**
+ * adding at sorted order for ascending ordered lists
+ * @param data
+ */
         void addSorted(T data){
             Node<T> *node = new Node<T>(nullptr, data,  nullptr);
             if(_head == nullptr) {
@@ -166,7 +224,14 @@ namespace ariel {
             }
             _size++;
         }
+        /**
+         * unlinking and removing Node from the list that represents data
+         * @param data
+         */
         void remove(T data){
+            if(!contains(data)){
+                return;
+            }
             _size--;
             if(_head->data==data && _tail->data==data){
                 delete _head;
@@ -195,6 +260,11 @@ namespace ariel {
             temp->next->prev=temp;
             delete curr;
         }
+        /**
+         * check if lists contains the node that holds data
+         * @param data
+         * @return true / false - contains/not contained
+         */
         bool contains(T data){
             if(len()==0){
                 return false;
@@ -211,20 +281,39 @@ namespace ariel {
             }
             return false;
         }
-        int* get(T data){
-            Node <T>*temp=_head;
-            while (temp->data!=data){
-                temp=temp->next;
+        /**
+         * finding the Node containing data if any and returning a pointer to the data
+         * @param data
+         * @return &(Node->data)
+         */
+        T* get(T data){
+            if(contains(data)) {
+                Node<T> *temp = _head;
+                while (temp->data != data) {
+                    temp = temp->next;
+                }
+                return &temp->data;
             }
-            return &temp->data;
+            return nullptr;
         }
-
+        /**
+         * getHead
+         * @return head Node
+         */
         Node<T>* getHead(){
             return _head;
         }
+        /**
+         * getTail
+         * @return tail Node
+         */
         Node<T>* getTail(){
             return _tail;
         }
+        /**
+         * returning length amount of nodes
+         * @return size_t amount of nodes
+         */
         size_t len(){
             return _size;
         }

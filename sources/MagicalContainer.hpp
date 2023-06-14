@@ -11,7 +11,13 @@
 #include "MagicalLinkList.hpp"
 using namespace std;
 namespace ariel {
-
+/**
+ * MagicalContainer contains and holds 3 different MagicalLinkLists
+ * elements in ascending order of integers
+ * crossElements in sideCrossOrder of pointers (int*)
+ * primeElements in ascending order of pointers (int*)
+ * with 3 methods to add , remove , and get size
+ */
     class MagicalContainer {
     private:
         MagicalLinkList<int> elements;
@@ -30,11 +36,14 @@ namespace ariel {
 
         virtual ~MagicalContainer();
 
+        /**
+         * Ascending Iterator iterating over elements
+         */
         struct AscendingIterator{
         public:
             using valueType=int;
-            using pointer = valueType*;
-            using reference = valueType&;
+            using pointer = int*;
+            using reference = int&;
 
             AscendingIterator();
             AscendingIterator(MagicalContainer& container);
@@ -61,11 +70,15 @@ namespace ariel {
             pointer ptr;
             Node<int>* pNode;
         };
+
+        /**
+         * SideCrossIterator iterating over crossElements
+         */
         struct SideCrossIterator{
         public:
             using valueType=int;
-            using pointer = valueType*;
-            using reference = valueType&;
+            using pointer = int*;
+            using reference = int&;
 
             SideCrossIterator();
             SideCrossIterator(MagicalContainer& container);
@@ -88,16 +101,18 @@ namespace ariel {
             bool operator!=(SideCrossIterator other);
 
         private:
-            bool flag;
             MagicalContainer *magicalContainer;
             pointer ptr;
             Node<int*>* pNode;
         };
+        /**
+         * PrimeIterator iterating over primeElements
+         */
         struct PrimeIterator{
         public:
             using valueType=int;
-            using pointer = valueType*;
-            using reference = valueType&;
+            using pointer = int*;
+            using reference = int&;
 
             PrimeIterator();
             PrimeIterator(MagicalContainer& container);

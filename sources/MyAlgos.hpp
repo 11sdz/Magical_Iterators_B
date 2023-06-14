@@ -6,7 +6,21 @@
 #define CMAKEITER_MYALGOS_HPP
 #include <cmath>
 #include <type_traits>
+/**
+ * algos to compareBetween values in Nodes
+ * and check if num is prime or not
+ */
 namespace ariel {
+    /**
+     * comparing between 2 elements
+     * if rval>lval return 1
+     * if rval=lval return 0
+     * if rval<lval return -1
+     * @tparam T int
+     * @param rval
+     * @param lval
+     * @return int 1,0,-1
+     */
     template<typename T>
     typename std::enable_if<!std::is_pointer<T>::value, int>::type
     compareValues(const T& rval, const T& lval) {
@@ -20,7 +34,13 @@ namespace ariel {
         }
         return res;
     }
-
+/**
+ *  if T is a pointer we "peel" and we call compareValues from above
+ * @tparam T
+ * @param rval
+ * @param lval
+ * @return 1,0,-1
+ */
     template<typename T>
     typename std::enable_if<std::is_pointer<T>::value, int>::type
     compareValues(const T& rval, const T& lval) {
@@ -45,5 +65,6 @@ namespace ariel {
         }
         return true;
     }
+
 }// ariel
 #endif //CMAKEITER_MYALGOS_HPP
