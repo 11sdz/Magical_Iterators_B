@@ -5,6 +5,8 @@
 #ifndef CMAKEITER_MAGICALLINKLIST_HPP
 #define CMAKEITER_MAGICALLINKLIST_HPP
 #include <stdio.h>
+#include <algorithm>
+#include <vector>
 #include "MyAlgos.hpp"
 using namespace std;
 namespace ariel {
@@ -12,9 +14,9 @@ namespace ariel {
     template<typename T>
     struct Node{
         T data;
-        Node<T>* next;
         Node<T>* prev;
-        Node(T data,Node<T>*prev,Node<T>*next):data(data),prev(prev),next(next){};
+        Node<T>* next;
+        Node(Node<T>*prev,T data,Node<T>*next):data(data),prev(prev),next(next){};
     };
 
     template <typename T>
@@ -24,18 +26,37 @@ namespace ariel {
         Node<T> *_head;
         Node<T> *_tail;
     public:
-        MagicalLinkList(){
-            _size=0;
-            _head= nullptr;
-            _tail= nullptr;
+        MagicalLinkList():_size(0),_head(nullptr),_tail(nullptr){}
+        MagicalLinkList(const MagicalLinkList& other): _size(other._size),_head(other._head),_tail(other._tail){}
+        MagicalLinkList& operator=(const MagicalLinkList& other){
+            if(this==&other){
+                return *this;
+            }
+            this->_head=other._head;
+            this->_tail=other._tail;
+            this->_size=other._size;
+            return *this;
+        }
+        MagicalLinkList(MagicalLinkList&& other) noexcept: _size(other._size),_head(other._head),_tail(other._tail){}
+        MagicalLinkList& operator=(MagicalLinkList&& other) noexcept{
+            this->_head=other._head;
+            this->_tail=other._tail;
+            this->_size=other._size;
+            return *this;
+        }
+
+        virtual ~MagicalLinkList() {
+            Node<T> *temp=_head;
+            while(temp!= nullptr){
+                Node<T>*next=temp->next;
+                delete(temp);
+                temp=next;
+            }
         }
 
         void crossOrder(){
             vector<Node<T>*> vector1;
-            Node<T>* minmax;
-            Node<T>* max;
-            Node<T>* start;
-            Node<T>* prev;
+            Node<T>* minmax= nullptr;
             bool flag= true;
             while (vector1.size()<len()) {
                 if(flag) {
@@ -62,8 +83,8 @@ namespace ariel {
             _tail=vector1.back();
             std::reverse(vector1.begin(), vector1.end());
             _head=vector1.back();
-            start=_head;
-            prev= nullptr;
+            Node<T>* start=_head;
+            Node<T>* prev= nullptr;
             while(!vector1.empty()){
                 start=vector1.back();
                 vector1.pop_back();
@@ -106,39 +127,33 @@ namespace ariel {
 
         void pushback(T data){
             if(_head== nullptr){
-                _head=new Node<T>(data, nullptr, nullptr);
+                _head=new Node<T>(nullptr,data, nullptr);
                 _tail=_head;
             }else if(_tail==_head){
-                _tail=new Node<T>(data, nullptr, nullptr);
+                _tail=new Node<T>(nullptr,data,nullptr);
                 _tail->prev=_head;
                 _head->next=_tail;
             }else{
                 Node<T>* temp=_tail;
-                _tail=new Node<T>(data,temp, nullptr);
+                _tail=new Node<T>(temp, data, nullptr);
                 temp->next=_tail;
             }
             _size++;
         }
 
         void addSorted(T data){
-            Node<T> *node = new Node<T>(data, nullptr, nullptr);
+            Node<T> *node = new Node<T>(nullptr, data,  nullptr);
             if(_head == nullptr) {
                 _head = node;
                 _tail = _head;
-                _size++;
-                return;
             }else if(compareValues(_tail->data,data)<0){
                 _tail->next=node;
                 node->prev=_tail;
                 _tail=node;
-                _size++;
-                return;
             }else if(compareValues(_head->data,data)>0){
                 _head->prev=node;
                 node->next=_head;
                 _head=node;
-                _size++;
-                return;
             }else{
                 Node<T> *temp = _head;
                 while(compareValues(temp->data,data)<0){
@@ -150,7 +165,6 @@ namespace ariel {
                 temp->prev=node;
             }
             _size++;
-            return;
         }
         void remove(T data){
             _size--;
@@ -159,13 +173,13 @@ namespace ariel {
                 _head= nullptr;
                 _tail= nullptr;
                 return;
-            }else if(_head->data==data){
+            }if(_head->data==data){
                 Node<T>* temp=_head;
                 _head=_head->next;
                 _head->prev= nullptr;
                 delete temp;
                 return;
-            }else if(_tail->data==data){
+            }if(_tail->data==data){
                 Node<T>* temp=_tail;
                 _tail=_tail->prev;
                 _tail->next= nullptr;

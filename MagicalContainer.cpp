@@ -12,6 +12,7 @@ namespace ariel {
      */
     MagicalContainer::MagicalContainer(){}
     MagicalContainer::~MagicalContainer() {
+
     }
 
     MagicalContainer::MagicalContainer(const MagicalContainer &magicalContainer) {

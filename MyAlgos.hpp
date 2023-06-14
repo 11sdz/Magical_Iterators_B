@@ -10,13 +10,15 @@ namespace ariel {
     template<typename T>
     typename std::enable_if<!std::is_pointer<T>::value, int>::type
     compareValues(const T& rval, const T& lval) {
+        int res=0;
         if (rval > lval) {
-            return 1;
+            res =1;
         } else if (rval < lval) {
-            return -1;
+            res =-1;
         } else {
-            return 0;
+            res =0;
         }
+        return res;
     }
 
     template<typename T>
@@ -35,7 +37,7 @@ namespace ariel {
         if (number <= 0 || number == 1 || number % 2 == 0) {
             return false;
         }
-        int sqrtNumber = sqrt(number) + 1;
+        int sqrtNumber =(int)sqrt(number) + 1;
         for (int i = 3; i < sqrtNumber; i = i + 2) {
             if (number % i == 0) {
                 return false;
